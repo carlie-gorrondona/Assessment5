@@ -249,23 +249,26 @@ module.exports = {
     },
 
     getCities: (req, res) => {
-        const {countryId} = req.body;
 
         sequelize.query(`
-            SELECT * FROM cities city
+            SELECT city.name AS city, country.name AS country, city.rating, city.city_id
+            FROM cities city
             JOIN countries country
             ON city.country_id = country.country_id
-            WHERE country.country_id = ${countryId}
+            ORDER BY city.rating DESC;
         `)
             .then(dbRes => res.status(200).send(dbRes[0]))
             .catch(err => console.log(err))
     },
 
     deleteCity: (req, res) => {
+        let cityId = +req.params.id;
         sequelize.query(`
             DELETE 
             FROM cities
-            WHERE ${req.body.city_id}
+            WHERE city_id = ${cityId};
         `)
+            .then(dbRes => res.status(200).send(dbRes[0]))
+            .catch(err => console.log(err));
     }
 }
